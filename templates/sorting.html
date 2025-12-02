@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Student Photos</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .search-area {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-area input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .result-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .result-info {
+            padding: 10px;
+            background: #fff;
+            font-size: 0.9rem;
+        }
+
+        .similarity-score {
+            color: #27ae60;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Find Student Photos</h1>
+
+        <div class="search-area">
+            <input type="text" id="studentIdInput" placeholder="Enter Student ID">
+            <button id="findBtn" class="primary-btn">Find Photos</button>
+        </div>
+
+        <div id="statusMessage" class="hidden"></div>
+
+        <div id="resultsGrid" class="results-grid">
+            <!-- Results will be loaded here -->
+        </div>
+    </div>
+
+    <script src="/static/js/sorting.js"></script>
+</body>
+
+</html>
