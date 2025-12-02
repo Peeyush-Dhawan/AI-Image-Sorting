@@ -98,10 +98,10 @@ async def upload_gallery_images(files: List[UploadFile] = File(...)):
 
             # 2. Generate Embedding
             faces = eng.get_faces(img)
-            embedding = None
+            embeddings = []
             if faces:
-                # Use the largest face or first one
-                embedding = faces[0]['embedding']
+                # Store all embeddings
+                embeddings = [f['embedding'] for f in faces]
             else:
                 # If no face, we might still want to upload? Or skip?
                 # User said "create vector embedding". If no face, can't create it.
@@ -117,7 +117,7 @@ async def upload_gallery_images(files: List[UploadFile] = File(...)):
             # 4. Save to MongoDB
             doc = {
                 "schoolId": school_id,
-                "vectorgallery": embedding,
+                "vectorGallery": embeddings, # List of embeddings
                 "imageUrl": image_url,
                 "publicId": public_id,
                 "filename": file.filename

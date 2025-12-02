@@ -34,7 +34,7 @@ async def get_sorting_ui(request: Request):
     return templates.TemplateResponse("sorting.html", {"request": request})
 
 @router.post("/find")
-async def find_student_photos(student_id: str = Form(...), threshold: float = 0.1):
+async def find_student_photos(student_id: str = Form(...), threshold: float = 0.3):
     """
     Finds photos of a student in the gallery by comparing embeddings.
     """
@@ -57,13 +57,29 @@ async def find_student_photos(student_id: str = Form(...), threshold: float = 0.
     matches = []
     
     for img in gallery_list:
-        gallery_embedding = img.get("vectorgallery")
-        if not gallery_embedding:
-            print(f"DEBUG: Image {img.get('_id')} has no embedding")
-            continue
+        # Support both new (list) and old (single) schema for backward compatibility if needed, 
+        # but user agreed to re-upload. Let's prioritize the new schema.
+        gallery_embeddings = img.get("vectorGallery") # New schema: List of lists
+        
+        if not gallery_embeddings:
+            # Fallback to old schema
+            single_embedding = img.get("vectorgallery")
+            if single_embedding:
+                gallery_embeddings = [single_embedding]
+            else:
+                print(f"DEBUG: Image {img.get('_id')} has no embedding")
+                continue
             
-        # 3. Compare Vectors
-        sim = cosine_similarity(student_embedding, gallery_embedding)
+        # 3. Compare Vectors - Find Max Similarity
+        max_sim = -1.0
+        
+        for g_emb in gallery_embeddings:
+            sim = cosine_similarity(student_embedding, g_emb)
+            if sim > max_sim:
+                max_sim = sim
+        
+        sim = max_sim
+        print(f"DEBUG: Comparing with {img.get('_id')}, max similarity: {sim}")
         print(f"DEBUG: Comparing with {img.get('_id')}, similarity: {sim}")
         
         if sim > threshold:
@@ -83,7 +99,7 @@ async def find_student_photos(student_id: str = Form(...), threshold: float = 0.
                 "imageUrl": img.get("imageUrl"),
                 "similarity": sim,
                 "studentVector": student_embedding,
-                "galleryVector": gallery_embedding
+                "galleryVector": gallery_embeddings # Store all embeddings or just the list?
             }
             # Upsert to avoid duplicates for same pair? 
             # Or just insert? Let's upsert based on studentId + galleryImageId

@@ -31,13 +31,13 @@ class TestSorting(unittest.TestCase):
             {
                 "_id": "img1",
                 "schoolId": "SCH-001",
-                "vectorgallery": [1.0, 0.0],
+                "vectorGallery": [[1.0, 0.0], [0.5, 0.5]], # Match first face
                 "imageUrl": "http://img1.jpg"
             },
             {
                 "_id": "img2",
                 "schoolId": "SCH-001",
-                "vectorgallery": [0.0, 1.0],
+                "vectorGallery": [[0.0, 1.0]], # No match
                 "imageUrl": "http://img2.jpg"
             }
         ]
